@@ -2,8 +2,18 @@
 #include<stdlib.h>
 #include<string.h>
 
+FILE *rec;
+
+typedef struct {
+    char *filename;
+    int line;
+    FILE *csv;
+    char **buffer;
+    int size;
+    int arrsize;
+} buffer;
 void csvhead(buffer * a, char *filename) {
-    a->filename = strdup(filename);
+    a->filename = filename;
     a->csv = fopen(filename, "r+");
     if (!a->csv) {
         perror("Error opening file");
@@ -21,7 +31,7 @@ void csvheadfree(buffer *a){
     fclose(a->csv);
     a->buffer = NULL;
     a->size = 0;
-    free(a->filename);
+    //free(a->filename);
 }
 void clearbuffer(buffer *a){
     for(int i = 0; i < a->arrsize; i++){
@@ -187,4 +197,58 @@ void csvwriteat(buffer *a,char *str,int line,int column){
 
     csvwriteline(a, strdup(arr), line);
     free(arr);
+}
+int main() {
+    buffer a;
+    csvhead(&a,"rec.csv");
+    printf("%d\n",a.line);
+
+    csvreadline(&a);
+    for(int i = 0; i < a.arrsize; i++) {
+        printf("%s ", a.buffer[i]);
+    }
+    printf("\n");
+    printf("%d\n",a.line);
+
+    csvreadline(&a);
+    for(int i = 0; i < a.arrsize; i++) {
+        printf("%s ", a.buffer[i]);
+    }
+    printf("\n");
+    printf("%d\n",a.line);
+
+    csvwriteline(&a,"hello,world",4);
+
+    csvreadline(&a);
+    for(int i = 0; i < a.arrsize; i++) {
+        printf("%s ", a.buffer[i]);
+    }
+    printf("\n");
+    printf("%d\n",a.line);
+
+    csvreadline(&a);
+    for(int i = 0; i < a.arrsize; i++) {
+        printf("%s ", a.buffer[i]);
+    }
+    printf("\n");
+    printf("%d\n",a.line);
+
+    csvreadlineat(&a,1);
+    for(int i = 0; i < a.arrsize; i++) {
+        printf("%s ", a.buffer[i]);
+    }
+    printf("\n");
+    printf("%d\n",a.line);
+
+    csvwriteat(&a,"hello",1,2);
+
+    csvreadlineat(&a,1);
+    for(int i = 0; i < a.arrsize; i++) {
+        printf("%s ", a.buffer[i]);
+    }
+    printf("\n");
+    printf("%d\n",a.line);
+    printf(("%s\n",a.filename));
+    csvheadfree(&a);
+    return 0;
 }
