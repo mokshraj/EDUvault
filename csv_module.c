@@ -47,6 +47,10 @@ void csvseek(buffer *a ,int offset, int x){
     }
 }
 void csvreadline(buffer *a) {
+    char ch = fgetc(a->csv);
+    if (ch == EOF) {
+        return;
+        }
     a->arrsize=0;
     a->size = 1;
     char *buffer = (char*)malloc(a->size);
@@ -54,8 +58,6 @@ void csvreadline(buffer *a) {
         perror("Error assigning memory");
         return;
     }
-
-    char ch = fgetc(a->csv);
     while(ch != '\n' && ch != EOF) {
         buffer = (char *)realloc(buffer, a->size + 1);
         if (!buffer) {
@@ -94,6 +96,7 @@ void csvreadline(buffer *a) {
 }
 void csvreadlineat(buffer *a,int line){
     int i;
+    a->line = 1;
     csvseek(a,0,1);
     for(i = 0;i<line;i++){
         csvreadline(a);
@@ -187,4 +190,24 @@ void csvwriteat(buffer *a,char *str,int line,int column){
 
     csvwriteline(a, strdup(arr), line);
     free(arr);
+}
+void csvsize(buffer *a){
+    csvseek(a,0,1);
+    a->total_size = 0;
+    char ch;
+    while ((ch = fgetc(a->csv)) != EOF) {
+        a->total_size++;
+    }
+    csvreadlineat(a,a->line+1);
+}
+void csvlines(buffer *a){
+    a->total_lines = 0;
+    char ch;
+    csvseek(a,0,1);
+    while ((ch = fgetc(a->csv)) != EOF) {
+        if (ch == '\n') {
+            a->total_lines++;
+        }
+    }
+    csvreadlineat(a,a->line+1);
 }

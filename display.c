@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "csv_func.h"
+#include "csv_module.h"
 
 // read_csv function here
 int read_csv(const char *filename, Record records[], int *count)
@@ -13,7 +10,7 @@ int read_csv(const char *filename, Record records[], int *count)
         return -1;
     }
 
-    char line[100];
+    char line[1024];
     *count = 0;
 
     // Skip header line
@@ -21,13 +18,16 @@ int read_csv(const char *filename, Record records[], int *count)
 
     while (fgets(line, sizeof(line), fp))
     {
-        line[strcspn(line, "\n")] = 0; // remove newline
+        line[strcspn(line, "\r\n")] = 0; // Remove newline character
+
+        // Updated sscanf format string to trim spaces
         sscanf(line, "%d,%[^,],%[^,],%d,%[^,],%d,%f,%[^,],%[^,],%[^\n]",
                &records[*count].regid, records[*count].name,
-               &records[*count].gender,&records[*count].age,
-               &records[*count].course,&records[*count].sem,
-               &records[*count].percent,&records[*count].contact,
-               &records[*count].email,&records[*count].city);
+               records[*count].gender, &records[*count].age,
+               records[*count].course, &records[*count].sem,
+               &records[*count].percent, records[*count].contact,
+               records[*count].email, records[*count].city);
+
         (*count)++;
     }
 
@@ -44,7 +44,8 @@ void display_all(const Record records[], int count)
 
     printf("------ --------------- -------- ---- ---------- ---- ---------- --------------- ------------------------- ---------------\n");
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++)
+    {
         printf("%-6d %-15s %-8s %-4d %-10s %-4d %-10.2f %-15s %-25s %-15s\n",
                records[i].regid, records[i].name,
                records[i].gender, records[i].age,
