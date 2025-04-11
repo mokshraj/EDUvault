@@ -1,12 +1,13 @@
 #ifndef CSV_MODULE_H
 #define CSV_MODULE_H
 
-#define MAX_NAME 100
+#define MAX_NAME 101
 #define MAX_STUDENTS 100
-#define MAX_COURSE 50
-#define MAX_CONTACT 15
-#define MAX_EMAIL 150
-#define MAX_CITY 50
+#define MAX_COURSE 51
+#define MAX_CONTACT 11
+#define MAX_EMAIL 151
+#define MAX_CITY 51
+#define MAX_GENDER 11
 
 #define CSV_FILE "records.csv"
 
@@ -29,7 +30,7 @@ typedef struct {
 typedef struct
 {
     int regid, age, sem;
-    char name[MAX_NAME], gender[10], course[MAX_COURSE], contact[MAX_CONTACT], email[MAX_EMAIL], city[MAX_CITY];;
+    char name[MAX_NAME], gender[MAX_GENDER], course[MAX_COURSE], contact[MAX_CONTACT], email[MAX_EMAIL], city[MAX_CITY];
     float percent;
 } Record;
 

@@ -58,7 +58,7 @@ void csvreadline(buffer *a) {
         perror("Error assigning memory");
         return;
     }
-    while(ch != '\n' && ch != EOF) {
+    while(ch != '\n' && ch != EOF && ch != '\r') {
         buffer = (char *)realloc(buffer, a->size + 1);
         if (!buffer) {
             perror("Error reassigning memory");
@@ -70,6 +70,9 @@ void csvreadline(buffer *a) {
     }
     buffer[a->size-1] = '\0';
 
+    if (ch == '\r') {
+        ch = fgetc(a->csv);  // Read and discard \n
+    }
     // Free previous buffer contents
     clearbuffer(a);
 
@@ -175,6 +178,7 @@ void csvwriteat(buffer *a,char *str,int line,int column){
     if (!arr) {
         perror("Memory allocation failed");
         return;
+        
     }
     arr[0] = '\0';
     for (i = 0; i < a->arrsize; i++) {
@@ -201,7 +205,7 @@ void csvsize(buffer *a){
     csvreadlineat(a,a->line+1);
 }
 void csvlines(buffer *a){
-    a->total_lines = 0;
+    a->total_lines = 1;
     char ch;
     csvseek(a,0,1);
     while ((ch = fgetc(a->csv)) != EOF) {
