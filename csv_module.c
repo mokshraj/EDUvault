@@ -117,7 +117,7 @@ void csvwriteline(buffer *a, char *str, int line) {
     // Read and copy lines up to the target line
     char ch;
     for (i = 0; i < line - 1; i++) {
-        while ((ch = fgetc(a->csv)) != '\n' && ch != EOF) {
+        while ((ch = fgetc(a->csv)) != '\n' && ch != EOF && ch != '\r') {
             fputc(ch, temp);
         }
         if (ch == '\n') {
@@ -127,7 +127,7 @@ void csvwriteline(buffer *a, char *str, int line) {
     // Write the new line
     fprintf(temp, "%s\n", str);
     // Skip the line being replaced in the original file
-    while ((ch = fgetc(a->csv)) != '\n' && ch != EOF);
+    while ((ch = fgetc(a->csv)) != '\n' && ch != EOF && ch != '\r');
     // Copy the remaining lines from the original file to the temporary file
     while ((ch = fgetc(a->csv)) != EOF) {
         fputc(ch, temp);
@@ -162,38 +162,125 @@ void csvwriteat(buffer *a,char *str,int line,int column){
         perror("Invalid line or column number");
         return;
     }
-    int i,total_size = 1;
     csvreadlineat(a,line);
-
-    if (column-1 < a->arrsize && a->buffer[column-1]) {
+    if(a->arrsize>column-1){
         free(a->buffer[column-1]);
+        a->buffer[column-1] = strdup(str);
     }
-    
-    a->buffer[column-1] = strdup(str);
-    if (!a->buffer[column-1]) {
-        perror("Error duplicating string");
+    else{
+        perror("Invalid column number");
         return;
     }
-    char *arr = (char *)malloc(1);
-    if (!arr) {
-        perror("Memory allocation failed");
-        return;
-        
-    }
-    arr[0] = '\0';
-    for (i = 0; i < a->arrsize; i++) {
-        total_size += strlen(a->buffer[i]) + 1;
-        arr = (char *)realloc(arr, total_size);
-        if (!arr) {
-            perror("Memory reallocation failed");
-            return;
+    char *arr = (char *)calloc(a->size,sizeof(char));
+    int i;
+    for(i = 0;i < a->arrsize;i++){
+        strcat(arr,a->buffer[i]);
+        if(i<a->arrsize-1){
+            strcat(arr,",");
         }
-        strcat(arr, a->buffer[i]);
-        if (i < a->arrsize - 1) strcat(arr, ",");
     }
-
     csvwriteline(a, strdup(arr), line);
     free(arr);
+}
+void csvdelete(buffer *a,int line){
+    int i, prevline = a->line;
+    csvseek(a, 0, 1);
+    // Open a temporary file for writing
+    FILE *temp = fopen("temp.csv", "w+");
+    if (!temp) {
+        perror("Error opening temporary file");
+        return;
+    }
+    // Read and copy lines up to the target line
+    char ch;
+    for (i = 0; i < line - 1; i++) {
+        while ((ch = fgetc(a->csv)) != '\n' && ch != EOF) {
+            fputc(ch, temp);
+        }
+        if (ch == '\n') {
+            fputc('\n', temp);
+        }
+    }
+    // Skip the line being replaced in the original file
+    while ((ch = fgetc(a->csv)) != '\n' && ch != EOF);
+    // Copy the remaining lines from the original file to the temporary file
+    while ((ch = fgetc(a->csv)) != EOF) {
+        fputc(ch, temp);
+    }
+    // Close the original file and replace its contents with the temporary file
+    fclose(a->csv);
+    a->csv = fopen(a->filename, "w+");
+    if (!a->csv) {
+        perror("Error reopening original file");
+        fclose(temp);
+        return;
+    }
+    rewind(temp);
+    while ((ch = fgetc(temp)) != EOF) {
+        fputc(ch, a->csv);
+    }
+    fclose(temp);
+    // Reopen the original file in read/write mode
+    a->csv = freopen(a->filename, "r+", a->csv);
+    if (!a->csv) {
+        perror("Error reopening file");
+        return;
+    }
+    // Restore the previous line position
+    csvseek(a, 0, 1);
+    for (i = 0; i < prevline - 1; i++) {
+        csvreadline(a);
+    }
+}
+int csvfind(buffer *a,char *str,int columb){
+    csvlines(a);
+    int line = 0;
+    int i =0;
+    csvseek(a,0,1);
+    for(i = 0;i<a->total_lines;i++){
+        csvreadline(a);
+        if(strcmp(a->buffer[columb-1],str)==0){
+            line = a->line-1;
+            break;
+        }
+    }
+    return line;
+}
+void csvfindlike(buffer *a, char *str, int columb, int **arr) {
+    int arrsize = 0;
+    *arr = NULL;  // Initialize to NULL so realloc works properly
+    csvlines(a);
+    csvseek(a, 0, 1);
+    for (int i = 0; i < a->total_lines; i++) {
+        csvreadline(a);
+        if (strncmp(a->buffer[columb - 1], str, strlen(str)) == 0) {
+            arrsize++;
+            *arr = (int *)realloc(*arr, arrsize * sizeof(int));
+            (*arr)[arrsize - 1] = a->line - 1;
+        }
+    }
+    // Add sentinel (zero) at end
+    arrsize++;
+    *arr = (int *)realloc(*arr, arrsize * sizeof(int));
+    (*arr)[arrsize - 1] = -1;
+}
+void csvfindexact(buffer *a, char *str, int columb, int **arr) {
+    int arrsize = 0;
+    *arr = NULL;  // Initialize to NULL so realloc works properly
+    csvlines(a);
+    csvseek(a, 0, 1);
+    for (int i = 0; i < a->total_lines; i++) {
+        csvreadline(a);
+        if (strcmp(a->buffer[columb - 1], str) == 0) {
+            arrsize++;
+            *arr = (int *)realloc(*arr, arrsize * sizeof(int));
+            (*arr)[arrsize - 1] = a->line - 1;
+        }
+    }
+    // Add sentinel (zero) at end
+    arrsize++;
+    *arr = (int *)realloc(*arr, arrsize * sizeof(int));
+    (*arr)[arrsize - 1] = -1;
 }
 void csvsize(buffer *a){
     csvseek(a,0,1);
@@ -205,7 +292,7 @@ void csvsize(buffer *a){
     csvreadlineat(a,a->line+1);
 }
 void csvlines(buffer *a){
-    a->total_lines = 1;
+    a->total_lines = 0;
     char ch;
     csvseek(a,0,1);
     while ((ch = fgetc(a->csv)) != EOF) {

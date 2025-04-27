@@ -63,12 +63,6 @@ void pause_menu()
     printf("\n\nPress Enter to return to the menu...");
     getchar();
     getchar();
-    if(OS_WINDOWS){
-        system("cls");
-    }
-    else{
-        system("clear");
-    }
 }
 
 // to compile and run
@@ -81,29 +75,30 @@ void compile_and_run(const char *sourceFile)
 
     // compilation check
     if (!ensure_compiled(sourceFile, exeFile)) {
-        pause_menu();
         return;
     }
 
     run_program(exeFile);
-    pause_menu();
 }
 
+#define MAIN_MENU
+#if defined(MAIN_MENU) && !defined(MAIN_FILE)
 int main()
 {
+    printf("  ___  __               _           _____");
+    printf("\n |__  |  \\ |  |   \\  / /_\\  |  | |    |");
+    printf("\n |___ |__/ |__|    \\/ /   \\ |__| |___ |\n");
+
     int ch;
     while (1)
     {
-        printf("  ___  __               _           _____");
-        printf("\n |__  |  \\ |  |   \\  / /_\\  |  | |    |");
-        printf("\n |___ |__/ |__|    \\/ /   \\ |__| |___ |\n");
         printf("\nMENU:\n");
-        printf("1. Add Record Record\n");
-        printf("2. Edit Record Record\n");
-        printf("3. Delete Record Record\n");
-        printf("4. Find Record Record\n");
-        printf("5. Sort Record Records\n");
-        printf("6. Display All Record Records\n");
+        printf("1. Add Record\n");
+        printf("2. Edit Record\n");
+        printf("3. Delete Record\n");
+        printf("4. Find Record\n");
+        printf("5. Sort Record\n");
+        printf("6. Display All Records\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &ch);
@@ -112,21 +107,27 @@ int main()
         {
             case 1:
                 compile_and_run("add.c");
+                pause_menu();
                 break;
             case 2:
                 compile_and_run("update.c");
+                pause_menu();
                 break;
             case 3:
                 compile_and_run("delete.c");
+                pause_menu();
                 break;
             case 4:
                 compile_and_run("find.c");
+                pause_menu();
                 break;
             case 5:
                 compile_and_run("sort.c");
+                pause_menu();
                 break;
             case 6:
                 compile_and_run("display.c");
+                pause_menu();
                 break;
             case 0:
                 printf("\nExiting Edu Vault...\n");
@@ -138,3 +139,4 @@ int main()
     }
     return 0;
 }
+#endif

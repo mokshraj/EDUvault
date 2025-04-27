@@ -36,9 +36,12 @@ typedef struct
 
 // csv operations
 int read_csv(const char *filename, Record records[], int *count);
-
-// function declarations
 void display_all(const Record records[], int count);
+int csvfind(buffer *a,char *str,int columb);
+// function declarations
+void csvfindexact(buffer *a, char *str, int columb, int **arr);
+void csvfindlike(buffer *a,char *str,int columb, int **arr);
+void getsinput(char **str, int maxsize);
 void csvhead(buffer *a, char *filename);
 void csvheadfree(buffer *a);
 void clearbuffer(buffer *a);
@@ -47,6 +50,7 @@ void csvreadline(buffer *a);
 void csvreadlineat(buffer *a,int line);
 void csvwriteline(buffer *a, char *str, int line);
 void csvwriteat(buffer *a,char *str,int line,int column);
+void csvdelete(buffer *a,int line);
 void csvsize(buffer *a);
 void csvlines(buffer *a);
 

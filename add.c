@@ -1,7 +1,6 @@
 #include "csv_module.h"
-#pragma message("Compiling csv_module.c along with test.c")
 #include "csv_module.c"
-#include <stdlib.h>
+#include "getsinput.c"
 int diglen(int a){
     int len=0;
     while(a!=0){
@@ -25,32 +24,6 @@ void printRecord(buffer *a) {
     printf("Email           : %s\n", a->buffer[8]);
     printf("City            : %s\n", a->buffer[9]);
     printf("===========================\n");
-}
-void getsinput(char **str, int maxsize){
-    char *a;
-    char ch = fgetc(stdin);
-    int size = 1;
-    a = (char*)malloc(size);
-    if (!a) {
-        perror("Error assigning memory");
-    }
-    while(ch != '\n' && ch != EOF && ch != '\r') {
-        a = (char *)realloc(a, size + 1);
-        if (!a) {
-            perror("Error reassigning memory");
-        }
-        a[size-1] = ch;
-        size++;
-        ch = fgetc(stdin);
-    }
-    if(size > maxsize){
-        a[maxsize] = '\0';
-    }
-    else{
-        a[size-1] = '\0';
-    }
-    *str = strdup(a);
-    free(a);
 }
 void add(buffer *a,Record rec){
     fclose(a->csv);
@@ -138,7 +111,7 @@ void add(buffer *a,Record rec){
     strcat(arr, str);
     free(str);
     //write to csv
-    csvwriteline(a, arr, a->total_lines);
+    csvwriteline(a, arr, a->total_lines+1);
     free(arr);
 }
 int main(){
@@ -157,22 +130,37 @@ int main(){
     strncpy(rec.gender, str, sizeof(rec.gender) - 1);
     rec.gender[sizeof(rec.gender) - 1] = '\0'; 
 
+    age:
     printf("Enter Age: ");
     getsinput(&str,3);
-    sscanf(str, "%d", &rec.age);
+    if(sscanf(str, "%d", &rec.age)){}
+    else{
+        printf("Invalid Input try again !\n\n");
+        goto age;
+    }
 
     printf("Enter Course: ");
     getsinput(&str,MAX_COURSE);
     strncpy(rec.course, str, sizeof(rec.course) - 1);
     rec.course[sizeof(rec.course) - 1] = '\0'; 
 
+    sem:
     printf("Enter Semester: ");
     getsinput(&str,3);
-    sscanf(str, "%d", &rec.sem);
+    if(sscanf(str, "%d", &rec.sem)){}
+    else{
+        printf("Invalid Input try again !\n\n");
+        goto sem;
+    }
 
+    percent:
     printf("Enter Percentage: ");
     getsinput(&str,5);
-    sscanf(str, "%f", &rec.percent);
+    if(sscanf(str, "%f", &rec.percent)){}
+    else{
+        printf("Invalid Input try again !\n\n");
+        goto percent;
+    }
 
     printf("Enter Contact Number: ");
     getsinput(&str,MAX_CONTACT);
