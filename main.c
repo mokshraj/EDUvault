@@ -85,13 +85,13 @@ void compile_and_run(const char *sourceFile)
 #if defined(MAIN_MENU) && !defined(MAIN_FILE)
 int main()
 {
-    printf("  ___  __               _           _____");
-    printf("\n |__  |  \\ |  |   \\  / /_\\  |  | |    |");
-    printf("\n |___ |__/ |__|    \\/ /   \\ |__| |___ |\n");
-
+   
     int ch;
     while (1)
     {
+        printf("  ___  __               _           _____");
+        printf("\n |__  |  \\ |  |   \\  / /_\\  |  | |    |");
+        printf("\n |___ |__/ |__|    \\/ /   \\ |__| |___ |\n");    
         printf("\nMENU:\n");
         printf("1. Add Record\n");
         printf("2. Edit Record\n");
