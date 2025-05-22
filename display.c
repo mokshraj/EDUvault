@@ -1,7 +1,7 @@
 #include "csv_module.h"
 
 // read_csv function here
-int read_csv(const char *filename, Record records[], int *count)
+int read_csv(const char *filename, Record rec[], int *count)
 {
     FILE *fp = fopen(filename, "r");
     if (!fp)
@@ -18,15 +18,15 @@ int read_csv(const char *filename, Record records[], int *count)
 
     while (fgets(line, sizeof(line), fp))
     {
-        line[strcspn(line, "\r\n")] = 0; // Remove newline character
+        line[strcspn(line, "\r\n")] = 0; // remove newline char
 
-        // Updated sscanf format string to trim spaces
+        // updated sscanf format string to trim spaces
         sscanf(line, "%d,%[^,],%[^,],%d,%[^,],%d,%f,%[^,],%[^,],%[^\n]",
-               &records[*count].regid, records[*count].name,
-               records[*count].gender, &records[*count].age,
-               records[*count].course, &records[*count].sem,
-               &records[*count].percent, records[*count].contact,
-               records[*count].email, records[*count].city);
+               &rec[*count].regid, rec[*count].name,
+               rec[*count].gender, &rec[*count].age,
+               rec[*count].course, &rec[*count].sem,
+               &rec[*count].percent, rec[*count].contact,
+               rec[*count].email, rec[*count].city);
 
         (*count)++;
     }
@@ -36,7 +36,7 @@ int read_csv(const char *filename, Record records[], int *count)
 }
 
 // display_all function
-void display_all(const Record records[], int count)
+void display_all(const Record rec[], int count)
 {
     printf("%-6s %-15s %-8s %-4s %-10s %-4s %-10s %-15s %-25s %-15s\n",
            "RegID", "Name", "Gender", "Age", "Course", "Sem", "Percentage",
@@ -47,20 +47,20 @@ void display_all(const Record records[], int count)
     for (int i = 0; i < count; i++)
     {
         printf("%-6d %-15s %-8s %-4d %-10s %-4d %-10.2f %-15s %-25s %-15s\n",
-               records[i].regid, records[i].name,
-               records[i].gender, records[i].age,
-               records[i].course, records[i].sem,
-               records[i].percent, records[i].contact,
-               records[i].email, records[i].city);
+               rec[i].regid, rec[i].name,
+               rec[i].gender, rec[i].age,
+               rec[i].course, rec[i].sem,
+               rec[i].percent, rec[i].contact,
+               rec[i].email, rec[i].city);
     }
 }
 
 int main()
 {
-    Record records[MAX_STUDENTS];
+    Record rec[MAX_STUDENTS];
     int count = 0;
 
-    if (read_csv(CSV_FILE, records, &count) != 0)
+    if (read_csv(CSV_FILE, rec, &count) != 0)
     {
         printf("Failed to read from %s\n", CSV_FILE);
         return 1;
@@ -73,7 +73,7 @@ int main()
     }
 
     printf("\n--- Student Records ---\n\n");
-    display_all(records, count);
+    display_all(rec, count);
 
     return 0;
 }
