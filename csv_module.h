@@ -437,6 +437,12 @@ int csvfind(buffer *a,char *str,int column)
     return line;
 }
 
+//lowercase function for csvfindlike
+void lowercase(char *a){
+    if((int)(*a)<91 && (int)(*a)>64){
+        *a = *a + 32;
+    }
+}
 
 // to find string in specified column
 void csvfindlike(buffer *a, char *str, int column, int **arr)
@@ -446,19 +452,33 @@ void csvfindlike(buffer *a, char *str, int column, int **arr)
 
     csvlines(a);
 
+    char *bufcpy = NULL;
+
     csvseek(a, 0, 1);
 
     for (int i = 0; i < a->total_lines; i++)
     {
         csvreadline(a);
 
-        if (strncmp(a->buffer[column - 1], str, strlen(str)) == 0)
+        bufcpy = strdup(a->buffer[column - 1]);
+
+        for(int i = 0;bufcpy[i]!='\0';i++){ // covert to lowercase
+            lowercase(&bufcpy[i]);
+        }
+
+        for(int i = 0;str[i]!='\0';i++){ // covert to lowercase
+            lowercase(&str[i]);
+        }
+
+        if (strncmp(bufcpy, str, strlen(str)) == 0)
         {
             arrsize++;
             *arr = (int *)realloc(*arr, arrsize * sizeof(int));
             (*arr)[arrsize - 1] = a->line - 1;
         }
     }
+
+    free(bufcpy);
 
     // Add sentinel (zero) at end
     arrsize++;

@@ -125,7 +125,7 @@ int main()
         while(arr[i]!=-1)
         {
             csvreadlineat(&a,arr[i]);
-            printf("%-6s %-15s %-8s %-4s %-10s %-4s %-10s %-15s %-25s %-15s\n",
+            printf("%-6s %-15.15s %-8s %-4s %-10s %-4s %-10.2s %-15s %-25s %-15s\n",
                 a.buffer[0], a.buffer[1],
                 a.buffer[2], a.buffer[3],
                 a.buffer[4], a.buffer[5],
@@ -152,7 +152,7 @@ int main()
         while(arr[i]!=-1)
         {
             csvreadlineat(&a,arr[i]);
-            printf("%-6s %-15s %-8s %-4s %-10s %-4s %-10s %-15s %-25s %-15s\n",
+            printf("%-6s %-15.15s %-8s %-4s %-10s %-4d %-10.2s %-15s %-25s %-15s\n",
                 a.buffer[0], a.buffer[1],
                 a.buffer[2], a.buffer[3],
                 a.buffer[4], a.buffer[5],

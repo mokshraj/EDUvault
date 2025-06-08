@@ -46,7 +46,7 @@ void display_all(const Record rec[], int count)
 
     for (int i = 0; i < count; i++)
     {
-        printf("%-6d %-15s %-8s %-4d %-10s %-4d %-10.2f %-15s %-25s %-15s\n",
+        printf("%-6d %-15.15s %-8s %-4d %-10s %-4d %-10.2f %-15s %-25s %-15s\n",
                rec[i].regid, rec[i].name,
                rec[i].gender, rec[i].age,
                rec[i].course, rec[i].sem,
