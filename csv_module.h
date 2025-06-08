@@ -453,8 +453,11 @@ void csvfindlike(buffer *a, char *str, int column, int **arr)
     csvlines(a);
 
     char *bufcpy = NULL;
-
     csvseek(a, 0, 1);
+
+    for(int i = 0;str[i]!='\0';i++){ // covert to lowercase
+            lowercase(&str[i]);
+        }
 
     for (int i = 0; i < a->total_lines; i++)
     {
@@ -464,10 +467,6 @@ void csvfindlike(buffer *a, char *str, int column, int **arr)
 
         for(int i = 0;bufcpy[i]!='\0';i++){ // covert to lowercase
             lowercase(&bufcpy[i]);
-        }
-
-        for(int i = 0;str[i]!='\0';i++){ // covert to lowercase
-            lowercase(&str[i]);
         }
 
         if (strncmp(bufcpy, str, strlen(str)) == 0)
