@@ -201,7 +201,7 @@ int main()
     email:
     printf("Enter Email: ");
     getsinput(&str,MAX_EMAIL);
-    if(strstr(str,"@") == NULL || strstr(str,".com") == NULL){
+    if(strstr(str,"@") == NULL || strstr(str,".") == NULL){
         printf("Invalid Input try again !\n\n");
         goto email;
     }
