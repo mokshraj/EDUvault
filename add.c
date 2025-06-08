@@ -186,13 +186,25 @@ int main()
         goto percent;
     }
 
+    //goto point contact
+    contact:
     printf("Enter Contact Number: ");
     getsinput(&str,MAX_CONTACT);
+    if(strlen(str)!=10){
+        printf("Invalid Input try again !\n\n");
+        goto contact;
+    }
     strncpy(rec.contact, str, sizeof(rec.contact) - 1);
     rec.contact[sizeof(rec.contact) - 1] = '\0';
 
+    //goto point email
+    email:
     printf("Enter Email: ");
     getsinput(&str,MAX_EMAIL);
+    if(strstr(str,"@") == NULL || strstr(str,".com") == NULL){
+        printf("Invalid Input try again !\n\n");
+        goto email;
+    }
     strncpy(rec.email, str, sizeof(rec.email) - 1);
     rec.email[sizeof(rec.email) - 1] = '\0';
 
